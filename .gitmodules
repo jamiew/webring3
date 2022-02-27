@@ -1,3 +1,0 @@
-[submodule "webring/lib/ds-test"]
-	path = webring/lib/ds-test
-	url = https://github.com/dapphub/ds-test
