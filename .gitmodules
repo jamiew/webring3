@@ -1,3 +1,7 @@
 [submodule "ethereum/lib/ds-test"]
 	path = ethereum/lib/ds-test
 	url = https://github.com/dapphub/ds-test
+[submodule "ethereum/lib/forge-std"]
+	path = ethereum/lib/forge-std
+	url = https://github.com/brockelmore/forge-std
+
