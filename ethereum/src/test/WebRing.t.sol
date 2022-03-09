@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.10;
 
 import "ds-test/test.sol";
 import "../WebRing.sol";
 import {Utilities} from "./utils/Utilities.sol";
-import {console} from "./utils/Console.sol"; // FIXME this is in forge-std too
+import {console} from "./utils/Console.sol"; // FIXME i think this is in forge-std too
 import {Vm} from "forge-std/Vm.sol";
 
 
@@ -14,8 +14,8 @@ contract WebRingTest is DSTest {
 
     WebRing webring;
 
-    address validMemberAddress = 0x3769c5700Da07Fe5b8eee86be97e061F961Ae340; // gawds
-    uint256 validMemberTokenId = 4569; // dark lord of the wood gang
+    address validWebsiteAddress = 0x3769c5700Da07Fe5b8eee86be97e061F961Ae340; // gawds
+    uint256 validWebsiteTokenId = 4569; // dark lord of the wood gang
 
     address forgeDeployer = 0xb4c79daB8f259C7Aee6E5b2Aa729821864227e84;
 
@@ -24,8 +24,8 @@ contract WebRingTest is DSTest {
     }
 
     // helpers
-    function validMemberJoin() private {
-        webring.join(validMemberAddress, validMemberTokenId);
+    function joinWebring() private {
+        webring.join(validWebsiteAddress, validWebsiteTokenId);
     }
 
     // tests
@@ -34,20 +34,20 @@ contract WebRingTest is DSTest {
     }
 
     function testJoinAndLeave() public {
-        assertEq(webring.membersCount(), 0);
+        assertEq(webring.websitesCount(), 0);
 
-        validMemberJoin();
-        assertEq(webring.membersCount(), 1);
+        joinWebring();
+        assertEq(webring.websitesCount(), 1);
 
         webring.leave();
-        assertEq(webring.membersCount(), 0);
+        assertEq(webring.websitesCount(), 0);
     }
 
     function testJoinEmitsEvent() public {
       // FIXME not quite working
       // vm.expectEmit(true, false, false, true);
-      // emit WebRing.JoinWebRing(validMemberAddress);
-      // validMemberJoin();
+      // emit WebRing.JoinWebRing(validWebsiteAddress);
+      // joinWebring();
     }
 
     function testLeaveEmitsEvent() public {
@@ -58,16 +58,21 @@ contract WebRingTest is DSTest {
       webring.join(address(0), 0);
     }
 
+    function testFailCannotJoinTwice() public {
+      joinWebring();
+      joinWebring();
+    }
+
     function testNullTokenIdIsOK() public {
-      webring.join(validMemberAddress, 0);
-      assertEq(webring.membersCount(), 1);
+      webring.join(validWebsiteAddress, 0);
+      assertEq(webring.websitesCount(), 1);
     }
 
     function testIndexOf() public {
-      validMemberJoin();
+      joinWebring();
       assertEq(
         webring.indexOf(forgeDeployer),
-        1 
+        1
       );
 
       assertEq(
@@ -76,19 +81,19 @@ contract WebRingTest is DSTest {
       );
     }
 
-    function testMemberInfo() public {
-      validMemberJoin();
-      (uint256 id, address addr, uint256 tokenId) = webring.memberInfo(forgeDeployer);
+    function testWebsiteInfo() public {
+      joinWebring();
+      (uint256 id, address addr, uint256 tokenId) = webring.websiteInfo(forgeDeployer);
       assertEq(id, 1);
-      assertEq(addr, validMemberAddress);
-      assertEq(tokenId, validMemberTokenId);
+      assertEq(addr, validWebsiteAddress);
+      assertEq(tokenId, validWebsiteTokenId);
     }
 
     function contractAddressFor() public {
-      validMemberJoin();
+      joinWebring();
       assertEq(
         webring.contractAddressFor(forgeDeployer),
-        validMemberAddress
+        validWebsiteAddress
       );
     }
 

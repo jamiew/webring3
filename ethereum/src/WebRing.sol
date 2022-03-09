@@ -3,28 +3,28 @@ pragma solidity 0.8.10;
 
 contract WebRing {
 
-  struct Member {
-    address creator;
+  struct Website {
+    address webmaster;
     uint256 id;
     address contractAddr;
     uint256 tokenId; // optional
   }
 
-  mapping (uint256 => Member) public members;
+  mapping (uint256 => Website) public websites;
   mapping (address => uint256) public owners;
-  uint256 public membersCount;
+  uint256 public websitesCount;
 
   event JoinWebRing (address indexed who, uint256 id, address contractAddr, uint256 tokenId);
   event LeaveWebRing (address indexed who);
 
   function join(address contractAddr, uint256 tokenId) public {
-    require(contractAddr != address(0), "can't add null address");
-    // tokenId sometimes 0 because blank, sometimes because programmers
     require(indexOf(msg.sender) == 0, "you're already a member of the webring");
+    require(contractAddr != address(0), "can't add null address");
+    // fine if tokenId is blank
 
-    uint256 nextId = membersCount + 1;
+    uint256 nextId = websitesCount + 1;
 
-    members[nextId] = Member(
+    websites[nextId] = Website(
       msg.sender,
       nextId,
       contractAddr,
@@ -33,13 +33,13 @@ contract WebRing {
 
     owners[msg.sender] = nextId;
 
-    membersCount++;
+    websitesCount++;
 
     emit JoinWebRing(
-      members[nextId].creator,
-      members[nextId].id,
-      members[nextId].contractAddr,
-      members[nextId].tokenId
+      websites[nextId].webmaster,
+      websites[nextId].id,
+      websites[nextId].contractAddr,
+      websites[nextId].tokenId
     );
   }
 
@@ -47,9 +47,9 @@ contract WebRing {
     require(indexOf(msg.sender) != 0, "you are not a member of the webring");
 
     uint256 id = owners[msg.sender];
-    delete members[id];
+    delete websites[id];
     delete owners[msg.sender];
-    membersCount--;
+    websitesCount--;
     emit LeaveWebRing(msg.sender);
   }
 
@@ -61,17 +61,17 @@ contract WebRing {
     return owners[msg.sender];
   }
 
-  function memberInfo(address who) public returns (uint256, address, uint256) {
-    Member memory member = members[indexOf(who)];
-    return (member.id, member.contractAddr, member.tokenId);
+  function websiteInfo(address who) public returns (uint256, address, uint256) {
+    Website memory website = websites[indexOf(who)];
+    return (website.id, website.contractAddr, website.tokenId);
   }
 
   function myInfo() public returns (uint256, address, uint256) {
-    return memberInfo(msg.sender);
+    return websiteInfo(msg.sender);
   }
 
   function contractAddressFor(address who) public view returns (address) {
-    return members[indexOf(who)].contractAddr;
+    return websites[indexOf(who)].contractAddr;
   }
 
 }
